@@ -1,0 +1,13 @@
+{% extends 'advice_app/base.html' %}
+
+{% block title %}
+    Реєстрація
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Реєстрація</button>
+</form>
+{% endblock %}

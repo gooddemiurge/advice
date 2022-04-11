@@ -1,0 +1,46 @@
+{% extends 'advice_app/base.html' %}
+
+{% block title %}
+Котик
+{% endblock %}
+
+{% block content %}
+<h1>Головна</h1>
+<a href="{% url 'register' %}"><h2>Зареєструватись</h2></a>
+{% if posts %}
+  {% for i in posts %}
+    <div class="alert alert-warning mt-2">
+      <h3>{{ i.question }}</h3>
+      <p>{{ i.date }}</p>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>Наразі дописів немає</p>
+{% endif %}
+<style>
+.container {
+  height: 200px;
+  position: relative;
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+</style>
+
+<div class="container">
+  <div class="center">
+    <img src="https://cdn.onlinepets.com/images/art/artikel-kitten-aufziehen-medpets-nl-4-1616590678-1114.jpg"></img></br>
+      <a class="center" href="{% url 'about' %}"><h1>Про нас</h1></a>
+      <a href="{% url 'add_post' %}"><h1>Додати допис</h1></a>
+  </div>
+</div>
+{% endblock %}
+
+
+

@@ -7,6 +7,7 @@
 {% block content %}
 <h1>Головна</h1>
 <a href="{% url 'register' %}"><h2>Зареєструватись</h2></a>
+<a href="{% url 'login' %}"><h2>Зайти в обліковий запис</h2></a>
 <h3>{{ request.user.username }}</h3>
 {% if posts %}
   {% for i in posts %}

@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import Post, Answer
 from .forms import PostForm
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+from django.contrib.auth import login as auth_login, authenticate
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
 # Create your views here.
@@ -38,10 +39,23 @@ def register(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
-            login(request, user)
+            auth_login(request, user)
             return redirect('index')
     else:
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form})
+
+def login(request):
+    form = AuthenticationForm(request, request.POST)
+    if form.is_valid():
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('index')
+    form = AuthenticationForm()
+    return render(request, 'advice_app/login.html', {'form': form})
+
 
 

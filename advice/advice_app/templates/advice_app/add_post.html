@@ -8,10 +8,9 @@
     <h1>Додати пост</h1>
     <form method="post">
         {% csrf_token %}
+        {{ form.title }}<br>
         {{ form.question }}<br>
-        {{ form.author }}<br>
         {{ form.isClosed }}<br>
-        {{ form.date }}<br>
         <button type="submit" class="btn btn-success">Додати</button><br>
         <span>{{ error }}</span>
     </form>

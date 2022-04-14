@@ -19,7 +19,9 @@ def add_post(request):
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
-            form.save()
+            new_post = form.save(commit=False)
+            new_post.author = request.user
+            new_post.save()
             return redirect('index')
         else:
             error = 'Недійсна форма'
@@ -46,14 +48,15 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 def login(request):
-    form = AuthenticationForm(request, request.POST)
-    if form.is_valid():
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            auth_login(request, user)
-            return redirect('index')
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                auth_login(request, user)
+                return redirect('index')
     form = AuthenticationForm()
     return render(request, 'advice_app/login.html', {'form': form})
 

@@ -4,5 +4,5 @@ from django.forms import ModelForm, Textarea
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ["question", "author", "isClosed", "date"]
+        fields = ["title", "question", "isClosed"]
         widgets = {"question": Textarea(attrs={'placeholder': 'Введіть назву'})}

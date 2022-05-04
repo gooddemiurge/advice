@@ -23,3 +23,9 @@ class Post(models.Model):
     def __str__(self):
         return self.question
 
+
+class My_user(User):
+    rating = models.IntegerField()
+
+    def __str__(self):
+        return self.rating

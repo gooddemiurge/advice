@@ -5,4 +5,4 @@ class PostForm(ModelForm):
     class Meta:
         model = Post
         fields = ["title", "question", "isClosed"]
-        widgets = {"question": Textarea(attrs={'placeholder': 'Введіть назву'})}
+        widgets = {"question": Textarea(attrs={'placeholder': 'Введіть питання'})}

@@ -1,45 +1,28 @@
 {% extends 'advice_app/base.html' %}
 
 {% block title %}
-Котик
+Головна
 {% endblock %}
 
 {% block content %}
-<h1>Головна</h1>
-{% if posts %}
-  {% for i in posts %}
-    <div class="alert alert-warning mt-2">
-      <h3>{{ i.title }}</h3>
-      <p>{{ i.question }}</p>
-      <p>{{ i.author }}</p>
-      <p>{{ i.date }}</p>
+<h1 class="display-4 mx-4 my-3">Останні питання:</h1>
+{% if object_list %}
+  {% for i in object_list %}
+    <div class="card mt-4 mx-3">
+      <div class="card-header alert-success"><h5>{{ i.title }}</h5></div>
+      <div class="card-body">
+        <p class="card-text">{{ i.question|truncatewords:90 }}</p>
+        <a href="#" class="btn btn-outline-success">Докладніше</a>
+      </div>
+      <div class="navbar navbar-light bg-light text-muted">
+        <h6>Автор: {{ i.author }}</h6>
+        <h6>Дата публікації: {{ i.date }}</h6>
+      </div>
     </div>
   {% endfor %}
 {% else %}
   <p>Наразі дописів немає</p>
 {% endif %}
-
-<style>
-.container {
-  height: 200px;
-  position: relative;
-}
-
-.center {
-  margin: 0;
-  position: absolute;
-  top: 150%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-</style>
-
-<div class="container">
-  <div class="center">
-    <img src="https://cdn.onlinepets.com/images/art/artikel-kitten-aufziehen-medpets-nl-4-1616590678-1114.jpg"></img></br>
-  </div>
-</div>
 {% endblock %}
 
 

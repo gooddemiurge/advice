@@ -4,12 +4,16 @@ from .forms import PostForm
 from django.contrib import messages
 from django.contrib.auth import login as auth_login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.views.generic import ListView
 
 
 # Create your views here.
-def index(request):
-    posts = Post.objects.order_by('-id')
-    return render(request, 'advice_app/index.html', {'posts': posts})
+
+class Main_page(ListView):
+    model = Post
+    queryset = Post.objects.order_by('-id')[:10]
+    template_name = "advice_app/index.html"
+
 
 def about_us(request):
     return render(request, 'advice_app/about.html')

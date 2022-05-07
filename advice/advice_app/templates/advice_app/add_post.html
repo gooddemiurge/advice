@@ -10,7 +10,6 @@
         {% csrf_token %}
         {{ form.title }}<br>
         {{ form.question }}<br>
-        {{ form.isClosed }}<br>
         <button type="submit" class="btn btn-success">Додати</button><br>
         <span>{{ error }}</span>
     </form>

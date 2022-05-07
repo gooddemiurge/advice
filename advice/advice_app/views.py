@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Answer
-from .forms import PostForm
+from .forms import PostForm, AnswerForm
 from django.contrib import messages
 from django.contrib.auth import login as auth_login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView, CreateView
 
 
 # Create your views here.
@@ -15,8 +15,15 @@ class Main_page(ListView):
     template_name = "advice_app/index.html"
 
 
-def about_us(request):
-    return render(request, 'advice_app/about.html')
+class Post_detail(DetailView):
+    model = Post
+    template_name = "advice_app/detail.html"
+
+# class Add_answer(CreateView):
+#     form_class = AnswerForm
+#     template_name = "advice_app/detail.html"
+#     context_object_name = "answer"
+
 
 def add_post(request):
     error = ''

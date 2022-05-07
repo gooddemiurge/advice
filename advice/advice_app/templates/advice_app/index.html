@@ -6,23 +6,7 @@
 
 {% block content %}
 <h1 class="display-4 mx-4 my-3">Останні питання:</h1>
-{% if object_list %}
-  {% for i in object_list %}
-    <div class="card mt-4 mx-3">
-      <div class="card-header alert-success"><h5>{{ i.title }}</h5></div>
-      <div class="card-body">
-        <p class="card-text">{{ i.question|truncatewords:90 }}</p>
-        <a href="#" class="btn btn-outline-success">Докладніше</a>
-      </div>
-      <div class="navbar navbar-light bg-light text-muted">
-        <h6>Автор: {{ i.author }}</h6>
-        <h6>Дата публікації: {{ i.date }}</h6>
-      </div>
-    </div>
-  {% endfor %}
-{% else %}
-  <p>Наразі дописів немає</p>
-{% endif %}
+{% include 'advice_app/post.html' %}
 {% endblock %}
 
 

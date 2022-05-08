@@ -10,5 +10,5 @@ class PostForm(ModelForm):
 class AnswerForm(ModelForm):
     class Meta:
         model = Answer
-        fields = ["text", "rating"]
-        widgets = {"text": Textarea(attrs={'placeholder': 'Додайте відповідь'})}
+        fields = ["text"]
+        widgets = {"text": Textarea(attrs={'placeholder': 'Додайте відповідь', 'rows':5, 'cols':146})}

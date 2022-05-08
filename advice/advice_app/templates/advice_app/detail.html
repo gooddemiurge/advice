@@ -22,6 +22,30 @@
         <h6>Дата публікації: {{ object.date }}</h6>
       </div>
     </div>
+        <p class="display-4 mx-4 my-3">Відповіді: </p>
+        <div class="mx-3">
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form.text }}<br>
+        <button type="submit" class="btn btn-success">Додати</button>
+    </form>
+        </div>
+
+    {% if object.answers.all %}
+      {% for i in object.answers.all %}
+        <div class="card mt-4 mx-3">
+          <div class="card-body">
+            <p class="card-text">{{ i.text }}</p>
+          </div>
+          <div class="navbar navbar-light bg-light text-muted">
+            <h6>Автор: {{ i.author }}</h6>
+            <h6>Дата публікації: {{ i.date }}</h6>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>Наразі дописів немає</p>
+    {% endif %}
     </div>
 </div>
 {% endblock %}

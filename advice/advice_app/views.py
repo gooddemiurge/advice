@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views.generic.edit import FormMixin
+
 from .models import Post, Answer
 from .forms import PostForm, AnswerForm
-from django.contrib import messages
 from django.contrib.auth import login as auth_login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView
 
 
 # Create your views here.
@@ -15,14 +18,26 @@ class Main_page(ListView):
     template_name = "advice_app/index.html"
 
 
-class Post_detail(DetailView):
+class Post_detail(FormMixin, DetailView):
     model = Post
     template_name = "advice_app/detail.html"
+    form_class = AnswerForm
 
-# class Add_answer(CreateView):
-#     form_class = AnswerForm
-#     template_name = "advice_app/detail.html"
-#     context_object_name = "answer"
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('detail', kwargs={'pk':self.get_object().id})
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.post = self.get_object()
+        self.object.author = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        return self.form_valid(form)
+
+
 
 
 def add_post(request):

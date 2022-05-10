@@ -20,6 +20,9 @@ class Answer(models.Model):
     date = models.DateField(auto_now=True)
     rating = models.IntegerField(default=0)
 
+    class Meta:
+        ordering = ['-id']
+
     def __str__(self):
         return self.text
 

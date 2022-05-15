@@ -8,7 +8,9 @@
 <div class="row justify-content-center">
     <div class="col-xl-9">
     <div class="card mt-4 mx-3">
-      <div class="card-header alert-success"><h5>{{ object.title }}</h5></div>
+      <div class="card-header alert-success">
+          <h5>{{ object.title }}</h5>
+      </div>
       <div class="card-body">
         <p class="card-text">{{ object.question }}</p>
         {% if object.isClosed %}
@@ -17,7 +19,7 @@
           <span class="badge rounded-pill bg-success text-light">Питання відкрите</span>
         {% endif %}
         {% if request.user == object.author %}
-          <a href="{% url 'delete' object.id %}" class="btn btn-outline-danger">Видалити</a>
+          <a href="{% url 'delete' object.id %}" class="float-right btn btn-outline-dark">Видалити</a>
         {% endif %}
       </div>
       <div class="navbar navbar-light bg-light text-muted">

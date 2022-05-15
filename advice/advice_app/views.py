@@ -52,8 +52,12 @@ class Post_detail(FormMixin, DetailView):
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
+        page = request.META.get('HTTP_REFERER')
         form = self.get_form()
-        return self.form_valid(form)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return redirect(page)
 
 
 

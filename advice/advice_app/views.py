@@ -1,6 +1,7 @@
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import FormMixin
 
 from .models import Post, Answer
@@ -17,6 +18,23 @@ class Main_page(ListView):
     queryset = Post.objects.order_by('-id')[:10]
     template_name = "advice_app/index.html"
 
+class My_posts(ListView):
+    Model = Post
+    template_name = "advice_app/my_posts.html"
+
+    def get_queryset(self):
+        return Post.objects.filter(author=self.request.user)
+
+def delete_post(request, pk=None):
+    post_to_delete = Post.objects.get(id=pk)
+    post_to_delete.delete()
+    return HttpResponseRedirect(reverse('index'))
+
+def delete_answer(request, pk=None):
+    page = request.META.get('HTTP_REFERER')
+    answer_to_delete = Answer.objects.get(id=pk)
+    answer_to_delete.delete()
+    return redirect(page)
 
 class Post_detail(FormMixin, DetailView):
     model = Post

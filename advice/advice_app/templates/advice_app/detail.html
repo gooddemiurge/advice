@@ -16,6 +16,9 @@
         {% else %}
           <span class="badge rounded-pill bg-success text-light">Питання відкрите</span>
         {% endif %}
+        {% if request.user == object.author %}
+          <a href="{% url 'delete' object.id %}" class="btn btn-outline-danger">Видалити</a>
+        {% endif %}
       </div>
       <div class="navbar navbar-light bg-light text-muted">
         <h6>Автор: {{ object.author }}</h6>
@@ -30,12 +33,14 @@
         <button type="submit" class="btn btn-success">Додати</button>
     </form>
         </div>
-
     {% if object.answers.all %}
       {% for i in object.answers.all %}
         <div class="card mt-4 mx-3">
           <div class="card-body">
             <p class="card-text">{{ i.text }}</p>
+            {% if request.user == i.author %}
+              <a href="{% url 'del_ans' i.id %}" class="btn btn-outline-dark">Видалити</a>
+            {% endif %}
           </div>
           <div class="navbar navbar-light bg-light text-muted">
             <h6>Автор: {{ i.author }}</h6>

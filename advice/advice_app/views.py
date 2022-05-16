@@ -23,7 +23,7 @@ class My_posts(ListView):
     template_name = "advice_app/my_posts.html"
 
     def get_queryset(self):
-        return Post.objects.filter(author=self.request.user)
+        return Post.objects.filter(author=self.request.user).order_by('-id')
 
 def delete_post(request, pk=None):
     post_to_delete = Post.objects.get(id=pk)
@@ -34,6 +34,16 @@ def delete_answer(request, pk=None):
     page = request.META.get('HTTP_REFERER')
     answer_to_delete = Answer.objects.get(id=pk)
     answer_to_delete.delete()
+    return redirect(page)
+
+def change_status(request, pk=None):
+    page = request.META.get('HTTP_REFERER')
+    post = Post.objects.get(id=pk)
+    if post.isClosed == 0:
+        post.isClosed = 1
+    else:
+        post.isClosed = 0
+    post.save()
     return redirect(page)
 
 class Post_detail(FormMixin, DetailView):

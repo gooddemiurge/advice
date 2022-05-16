@@ -5,12 +5,16 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Додати пост</h1>
-    <form method="post">
+    <div class="row justify-content-center">
+    <div class="col-xl-9">
+    <h1 class="display-4 mx-2 my-3 mt-5">Додати допис</h1>
+    <form method="post" class="post-form">
         {% csrf_token %}
         {{ form.title }}<br>
         {{ form.question }}<br>
-        <button type="submit" class="btn btn-success">Додати</button><br>
+        <button type="submit" class="btn btn-outline-success">Додати</button><br>
         <span>{{ error }}</span>
     </form>
+    </div>
+    </div>
 {% endblock %}

@@ -6,20 +6,35 @@
 
 {% block content %}
 <div class="row justify-content-center">
+
     <div class="col-xl-9">
     <div class="card mt-4 mx-3">
-      <div class="card-header alert-success"><h5>{{ object.title }}</h5></div>
+      <div class="card-header alert-success">
+          <h5>{{ object.title }}</h5>
+      </div>
+
       <div class="card-body">
         <p class="card-text">{{ object.question }}</p>
+
         {% if object.isClosed %}
           <span class="badge rounded-pill bg-secondary text-light">Відповідь отримано</span>
         {% else %}
           <span class="badge rounded-pill bg-success text-light">Питання відкрите</span>
         {% endif %}
+
         {% if request.user == object.author %}
-          <a href="{% url 'delete' object.id %}" class="btn btn-outline-danger">Видалити</a>
+          <div class="btn-group float-right" role="group">
+          <a href="#" class="float-right btn btn-outline-secondary">Редагувати</a>
+        {% if object.isClosed %}
+          <a href="{% url 'status' object.id %}" class="float-right btn btn-outline-secondary">Шукаю відповідь</a>
+        {% else %}
+          <a href="{% url 'status' object.id %}" class="float-right btn btn-outline-secondary">Відповідь отримав</a>
+        {% endif %}
+          <a href="{% url 'delete' object.id %}" class="float-right btn btn-outline-dark">Видалити</a>
+          </div>
         {% endif %}
       </div>
+
       <div class="navbar navbar-light bg-light text-muted">
         <h6>Автор: {{ object.author }}</h6>
         <h6>Дата публікації: {{ object.date }}</h6>
@@ -33,6 +48,7 @@
         <button type="submit" class="btn btn-success">Додати</button>
     </form>
         </div>
+
     {% if object.answers.all %}
       {% for i in object.answers.all %}
         <div class="card mt-4 mx-3">
@@ -51,6 +67,7 @@
     {% else %}
       <p class="display-6 mx-4 my-3">Наразі відповідей немає</p>
     {% endif %}
+
     </div>
 </div>
 {% endblock %}

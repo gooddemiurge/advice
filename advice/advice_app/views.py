@@ -39,10 +39,7 @@ def delete_answer(request, pk=None):
 def change_status(request, pk=None):
     page = request.META.get('HTTP_REFERER')
     post = Post.objects.get(id=pk)
-    if post.isClosed == 0:
-        post.isClosed = 1
-    else:
-        post.isClosed = 0
+    post.isClosed = not post.isClosed
     post.save()
     return redirect(page)
 

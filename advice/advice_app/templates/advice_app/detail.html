@@ -24,7 +24,7 @@
 
         {% if request.user == object.author %}
           <div class="btn-group float-right" role="group">
-          <a href="#" class="float-right btn btn-outline-secondary">Редагувати</a>
+          <a href="{% url 'edit' object.id %}" class="float-right btn btn-outline-secondary">Редагувати</a>
         {% if object.isClosed %}
           <a href="{% url 'status' object.id %}" class="float-right btn btn-outline-secondary">Шукаю відповідь</a>
         {% else %}

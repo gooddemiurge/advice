@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic.edit import FormMixin
+from django.views.generic.edit import FormMixin, UpdateView
 
 from .models import Post, Answer
 from .forms import PostForm, AnswerForm, SignUpForm, LoginForm
@@ -66,7 +66,10 @@ class Post_detail(FormMixin, DetailView):
         else:
             return redirect(page)
 
-
+class EditPost(UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'advice_app/edit.html'
 
 
 def add_post(request):

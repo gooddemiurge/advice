@@ -8,7 +8,7 @@ from django.forms import ModelForm, Textarea, TextInput
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ["title", "question", "isClosed"]
+        fields = ["title", "question"]
         widgets ={
             "title": TextInput(attrs={'placeholder': 'Введіть заголовок', 'class': 'form-control'}),
             "question": Textarea(attrs={'placeholder': 'Введіть питання', 'class': 'form-control'})

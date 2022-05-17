@@ -2,10 +2,10 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic.edit import FormMixin
+from django.views.generic.edit import FormMixin, UpdateView
 
 from .models import Post, Answer
-from .forms import PostForm, AnswerForm
+from .forms import PostForm, AnswerForm, SignUpForm, LoginForm
 from django.contrib.auth import login as auth_login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.generic import ListView, DetailView
@@ -66,7 +66,10 @@ class Post_detail(FormMixin, DetailView):
         else:
             return redirect(page)
 
-
+class EditPost(UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'advice_app/edit.html'
 
 
 def add_post(request):
@@ -90,7 +93,7 @@ def add_post(request):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
@@ -99,12 +102,12 @@ def register(request):
             auth_login(request, user)
             return redirect('index')
     else:
-        form = UserCreationForm()
+        form = SignUpForm()
     return render(request, 'advice_app/register.html', {'form': form})
 
 def login(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, request.POST)
+        form = LoginForm(request, request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -112,7 +115,7 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 return redirect('index')
-    form = AuthenticationForm()
+    form = LoginForm()
     return render(request, 'advice_app/login.html', {'form': form})
 
 

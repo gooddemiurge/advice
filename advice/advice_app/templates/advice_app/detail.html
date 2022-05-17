@@ -8,7 +8,7 @@
 <div class="row justify-content-center">
 
     <div class="col-xl-9">
-    <div class="card mt-4 mx-3">
+    <div class="card my-5 mx-3">
       <div class="card-header alert-success">
           <h5>{{ object.title }}</h5>
       </div>
@@ -24,7 +24,7 @@
 
         {% if request.user == object.author %}
           <div class="btn-group float-right" role="group">
-          <a href="#" class="float-right btn btn-outline-secondary">Редагувати</a>
+          <a href="{% url 'edit' object.id %}" class="float-right btn btn-outline-secondary">Редагувати</a>
         {% if object.isClosed %}
           <a href="{% url 'status' object.id %}" class="float-right btn btn-outline-secondary">Шукаю відповідь</a>
         {% else %}
@@ -40,6 +40,7 @@
         <h6>Дата публікації: {{ object.date }}</h6>
       </div>
     </div>
+
         <p class="display-4 mx-4 my-3">Відповіді: </p>
         <div class="mx-3">
     <form method="post" action="">

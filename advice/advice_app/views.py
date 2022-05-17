@@ -1,4 +1,4 @@
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
@@ -117,6 +117,10 @@ def login(request):
                 return redirect('index')
     form = LoginForm()
     return render(request, 'advice_app/login.html', {'form': form})
+
+def logout(request):
+    auth.logout(request)
+    return redirect('index')
 
 
 

@@ -42,6 +42,7 @@
     </div>
 
         <p class="display-4 mx-4 my-3">Відповіді: </p>
+        {% if request.user.username %}
         <div class="mx-3">
     <form method="post" action="">
         {% csrf_token %}
@@ -49,6 +50,9 @@
         <button type="submit" class="btn btn-success">Додати</button>
     </form>
         </div>
+        {% else %}
+        <h4 class="font-weight-normal mx-4 my-3 alert alert-success">Зареєструйтесь або увійдіть в обліковий запис щоб залишити відповідь</h4>
+        {% endif %}
 
     {% if object.answers.all %}
       {% for i in object.answers.all %}

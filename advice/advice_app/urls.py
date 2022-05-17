@@ -12,5 +12,6 @@ urlpatterns = [
     path('delete/<int:pk>', views.delete_post, name='delete'),
     path('del_ans/<int:pk>', views.delete_answer, name='del_ans'),
     path('status/<int:pk>', views.change_status, name='status'),
-    path('edit/<int:pk>', views.EditPost.as_view(), name='edit')
+    path('edit/<int:pk>', views.EditPost.as_view(), name='edit'),
+    path('logout', views.logout, name='logout')
 ]

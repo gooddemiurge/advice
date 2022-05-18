@@ -1,13 +1,13 @@
 from django.contrib import messages, auth
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import FormMixin, UpdateView
 
-from .models import Post, Answer
+from .models import Post, Answer, Key_words
 from .forms import PostForm, AnswerForm, SignUpForm, LoginForm
 from django.contrib.auth import login as auth_login, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.generic import ListView, DetailView
 
 
@@ -15,8 +15,33 @@ from django.views.generic import ListView, DetailView
 
 class Main_page(ListView):
     model = Post
-    queryset = Post.objects.order_by('-id')[:10]
+    queryset = Post.objects.order_by('-id')
     template_name = "advice_app/index.html"
+
+class Search(ListView):
+    model = Post
+    template_name = 'advice_app/search.html'
+
+    def get_queryset(self):
+        search_query = self.request.GET.get('search', '')
+        search_list = search_query.split()
+        search_result = []
+
+        for i in search_list:
+            if Key_words.is_key_word(i):
+                if not Key_words.objects.filter(word=i).exists():
+                    new_word = Key_words(word=i)
+                    new_word.save()
+                word = Key_words.objects.get(word=i)
+                for post in Post.objects.filter(Q(title__icontains=i) | Q(question__icontains=i)):
+                    word.posts.add(post.id)
+                    if post not in search_result:
+                        search_result.append(post)
+
+        if search_result:
+            return search_result
+        else:
+            return None
 
 class My_posts(ListView):
     Model = Post

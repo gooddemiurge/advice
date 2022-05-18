@@ -38,3 +38,17 @@ class My_user(User):
 
     def __str__(self):
         return self.rating
+
+class Key_words(models.Model):
+    posts = models.ManyToManyField(Post)
+    word = models.TextField(max_length=50)
+
+    def __str__(self):
+        return self.word
+
+    @staticmethod
+    def is_key_word(word):
+        if len(word) > 1 and " " not in word or word.isdigit():
+            return True
+        else:
+            return False

@@ -1,22 +1,47 @@
 from django.contrib import messages, auth
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import FormMixin, UpdateView
-
-from .models import Post, Answer
+from .models import Post, Answer, KeyWords
 from .forms import PostForm, AnswerForm, SignUpForm, LoginForm
 from django.contrib.auth import login as auth_login, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.generic import ListView, DetailView
 
 
-# Create your views here.
-
 class Main_page(ListView):
     model = Post
-    queryset = Post.objects.order_by('-id')[:10]
+    queryset = Post.objects.order_by('-id')
     template_name = "advice_app/index.html"
+
+
+class Search(ListView):
+    model = Post
+    template_name = 'advice_app/search.html'
+
+    def get_queryset(self):
+        search_query = self.request.GET.get('search', '')
+        search_list = search_query.split()
+        search_result = []
+
+        for keyword_user_wants in search_list:
+            if KeyWords.is_key_word(keyword_user_wants):
+                dbContainsKeyword = KeyWords.objects.filter(word=keyword_user_wants).exists()
+                if not dbContainsKeyword:
+                    new_word = KeyWords(word=keyword_user_wants)
+                    new_word.save()
+                else:
+                    new_word = KeyWords.objects.get(word=keyword_user_wants)
+
+                relevantPosts = Post.objects.filter(Q(title__icontains=keyword_user_wants) | Q(question__icontains=keyword_user_wants))
+                for post in relevantPosts:
+                    new_word.posts.add(post.id)
+                    if post not in search_result:
+                        search_result.append(post)
+
+        return search_result
+
 
 class My_posts(ListView):
     Model = Post
@@ -25,10 +50,12 @@ class My_posts(ListView):
     def get_queryset(self):
         return Post.objects.filter(author=self.request.user).order_by('-id')
 
+
 def delete_post(request, pk=None):
     post_to_delete = Post.objects.get(id=pk)
     post_to_delete.delete()
     return HttpResponseRedirect(reverse('index'))
+
 
 def delete_answer(request, pk=None):
     page = request.META.get('HTTP_REFERER')
@@ -36,12 +63,14 @@ def delete_answer(request, pk=None):
     answer_to_delete.delete()
     return redirect(page)
 
+
 def change_status(request, pk=None):
     page = request.META.get('HTTP_REFERER')
     post = Post.objects.get(id=pk)
     post.isClosed = not post.isClosed
     post.save()
     return redirect(page)
+
 
 class Post_detail(FormMixin, DetailView):
     model = Post
@@ -65,6 +94,7 @@ class Post_detail(FormMixin, DetailView):
             return self.form_valid(form)
         else:
             return redirect(page)
+
 
 class EditPost(UpdateView):
     model = Post
@@ -91,6 +121,7 @@ def add_post(request):
     }
     return render(request, 'advice_app/add_post.html', context)
 
+
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -105,6 +136,7 @@ def register(request):
         form = SignUpForm()
     return render(request, 'advice_app/register.html', {'form': form})
 
+
 def login(request):
     if request.method == 'POST':
         form = LoginForm(request, request.POST)
@@ -117,6 +149,7 @@ def login(request):
                 return redirect('index')
     form = LoginForm()
     return render(request, 'advice_app/login.html', {'form': form})
+
 
 def logout(request):
     auth.logout(request)

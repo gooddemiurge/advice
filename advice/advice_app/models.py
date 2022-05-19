@@ -1,8 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-# Create your models here.
-from django.shortcuts import redirect
 from django.urls import reverse
 
 
@@ -19,6 +16,7 @@ class Post(models.Model):
     def __str__(self):
         return self.question
 
+
 class Answer(models.Model):
     text = models.TextField("Відповідь")
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -33,8 +31,21 @@ class Answer(models.Model):
         return self.text
 
 
-class My_user(User):
+class MyUser(User):
     rating = models.IntegerField()
 
     def __str__(self):
         return self.rating
+
+
+class KeyWords(models.Model):
+    posts = models.ManyToManyField(Post)
+    word = models.TextField(max_length=50)
+
+    def __str__(self):
+        return self.word
+
+    @staticmethod
+    def is_key_word(text):
+        isKeyword = len(text) > 1 and " " not in text or text.isdigit()
+        return isKeyword

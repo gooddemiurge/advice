@@ -49,3 +49,17 @@ class KeyWords(models.Model):
     def is_key_word(text):
         isKeyword = len(text) > 1 and " " not in text or text.isdigit()
         return isKeyword
+
+    @staticmethod
+    def translate(text):
+        incorrect_input_dict = {"q":"й", "w":"ц", "e":"у", "r":"к", "t":"е", "y":"н", "u":"г", "i":"ш", "o":"щ", "p":"з", '[':"х", "]":"ї", "a":"ф", "s":"і", "d":"в", "f":"а", "g":"п", "h":"р", "j":"о", "k":"л", "l":"д", ";":"ж", "'":"є", "z":"я", "x":"ч", "c":"с", "v":"м", "b":"и", "n":"т", "m":"ь", ",":"б", ".":"ю", "`":"'",
+                                "Q":"Й", "W":"Ц", "E":"У", "R":"К", "T":"Е", "Y":"Н", "U":"Г", "I":"Ш", "O":"Щ", "P":"З", '{':"Х", "}":"Ї", "A":"Ф", "S":"І", "D":"В", "F":"А", "G":"П", "H":"Р", "J":"О", "K":"Л", "L":"Д", ":":"Ж", '"':"Є", "Z":"Я", "X":"Ч", "C":"С", "V":"М", "B":"И", "N":"Т", "M":"Ь", "<":"Б", ">":"Ю", "~":"'"}
+
+        new_text = ""
+        for letter in text:
+            if letter in incorrect_input_dict.keys():
+                new_text += incorrect_input_dict[letter]
+            else:
+                new_text += letter
+
+        return new_text

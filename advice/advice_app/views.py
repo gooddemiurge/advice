@@ -10,7 +10,7 @@ from django.contrib.auth import login as auth_login, authenticate
 from django.views.generic import ListView, DetailView
 
 
-class Main_page(ListView):
+class MainPage(ListView):
     model = Post
     queryset = Post.objects.order_by('-id')
     template_name = "advice_app/index.html"
@@ -35,6 +35,9 @@ class Search(ListView):
                     new_word = KeyWords.objects.get(word=keyword_user_wants)
 
                 relevantPosts = Post.objects.filter(Q(title__icontains=keyword_user_wants) | Q(question__icontains=keyword_user_wants))
+                if not relevantPosts:
+                    relevantPosts = Post.objects.filter(Q(title__icontains=KeyWords.translate(keyword_user_wants)) | Q(question__icontains=KeyWords.translate(keyword_user_wants)))
+
                 for post in relevantPosts:
                     new_word.posts.add(post.id)
                     if post not in search_result:
@@ -43,7 +46,7 @@ class Search(ListView):
         return search_result
 
 
-class My_posts(ListView):
+class MyPosts(ListView):
     Model = Post
     template_name = "advice_app/my_posts.html"
 
@@ -72,7 +75,7 @@ def change_status(request, pk=None):
     return redirect(page)
 
 
-class Post_detail(FormMixin, DetailView):
+class PostDetail(FormMixin, DetailView):
     model = Post
     template_name = "advice_app/detail.html"
     form_class = AnswerForm

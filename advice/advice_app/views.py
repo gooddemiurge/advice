@@ -1,10 +1,11 @@
 from django.contrib import messages, auth
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import FormMixin, UpdateView
-from .models import Post, Answer, KeyWords
+from .models import Post, Answer, KeyWords, MyUser
 from .forms import PostForm, AnswerForm, SignUpForm, LoginForm
 from django.contrib.auth import login as auth_login, authenticate
 from django.views.generic import ListView, DetailView
@@ -26,6 +27,7 @@ class Search(ListView):
         search_result = []
 
         for keyword_user_wants in search_list:
+            keyword_user_wants = KeyWords.remove_signs(keyword_user_wants)
             if KeyWords.is_key_word(keyword_user_wants):
                 dbContainsKeyword = KeyWords.objects.filter(word=keyword_user_wants).exists()
                 if not dbContainsKeyword:
@@ -86,7 +88,7 @@ class PostDetail(FormMixin, DetailView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.post = self.get_object()
-        self.object.author = self.request.user
+        self.object.author = MyUser.objects.get(id=self.request.user.id)
         self.object.save()
         return super().form_valid(form)
 
@@ -105,13 +107,49 @@ class EditPost(UpdateView):
     template_name = 'advice_app/edit.html'
 
 
+def increase(request, pk=None):
+    page = request.META.get('HTTP_REFERER')
+    user = MyUser.objects.get(username=Answer.objects.get(id=pk).author)
+    answer = Answer.objects.get(id=pk)
+    if MyUser.objects.get(id=request.user.id) not in answer.users_increased_rating.all():
+        answer.users_increased_rating.add(request.user.id)
+        if MyUser.objects.get(id=request.user.id) in answer.users_decreased_rating.all():
+            user_to_delate = answer.users_decreased_rating
+            user_to_delate.remove(MyUser.objects.get(id=request.user.id))
+            user_to_delate = answer.users_increased_rating
+            user_to_delate.remove(MyUser.objects.get(id=request.user.id))
+        user.rating += 1
+        user.save()
+        answer.rating += 1
+        answer.save()
+    return redirect(page)
+
+
+def decrease(request, pk=None):
+    page = request.META.get('HTTP_REFERER')
+    user = MyUser.objects.get(username=Answer.objects.get(id=pk).author)
+    answer = Answer.objects.get(id=pk)
+    if MyUser.objects.get(id=request.user.id) not in answer.users_decreased_rating.all():
+        answer.users_decreased_rating.add(request.user.id)
+        if MyUser.objects.get(id=request.user.id) in answer.users_increased_rating.all():
+            user_to_delate = answer.users_increased_rating
+            user_to_delate.remove(MyUser.objects.get(id=request.user.id))
+            user_to_delate = answer.users_decreased_rating
+            user_to_delate.remove(MyUser.objects.get(id=request.user.id))
+        user.rating -= 1
+        user.save()
+        answer.rating -= 1
+        answer.save()
+    return redirect(page)
+
+
 def add_post(request):
     error = ''
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
             new_post = form.save(commit=False)
-            new_post.author = request.user
+            new_post.author = MyUser.objects.get(id=request.user.id)
             new_post.save()
             return redirect('index')
         else:

@@ -14,5 +14,7 @@ urlpatterns = [
     path('status/<int:pk>', views.change_status, name='status'),
     path('edit/<int:pk>', views.EditPost.as_view(), name='edit'),
     path('logout', views.logout, name='logout'),
-    path('search', views.Search.as_view(), name='search')
+    path('search', views.Search.as_view(), name='search'),
+    path('increase/<int:pk>', views.increase, name='increase'),
+    path('decrease/<int:pk>', views.decrease, name='decrease')
 ]

@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
-from .models import Post, Answer
+from .models import Post, Answer, MyUser
 from django.forms import ModelForm, Textarea, TextInput
 
 
@@ -28,7 +28,7 @@ class SignUpForm(UserCreationForm):
         self.fields["password2"].widget.attrs.update({'class': 'form-control', 'placeholder': "Підтвердіть пароль"})
 
     class Meta:
-        model = User
+        model = MyUser
         fields = ["username", 'password1', 'password2']
 
 class LoginForm(AuthenticationForm):
@@ -38,5 +38,5 @@ class LoginForm(AuthenticationForm):
         self.fields["password"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть пароль"})
 
     class Meta:
-        model = User
+        model = MyUser
         fields = ["username", 'password']

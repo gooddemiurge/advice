@@ -22,7 +22,7 @@
           <span class="badge rounded-pill bg-success text-light">Питання відкрите</span>
         {% endif %}
 
-        {% if request.user == object.author %}
+        {% if request.user.username == object.author.username %}
           <div class="btn-group float-right" role="group">
           <a href="{% url 'edit' object.id %}" class="float-right btn btn-outline-secondary">Редагувати</a>
         {% if object.isClosed %}
@@ -36,7 +36,7 @@
       </div>
 
       <div class="navbar navbar-light bg-light text-muted">
-        <h6>Автор: {{ object.author }}</h6>
+        <h6>Автор: {{ object.author }}({{ object.author.rating }})</h6>
         <h6>Дата публікації: {{ object.date }}</h6>
       </div>
     </div>
@@ -58,13 +58,18 @@
       {% for i in object.answers.all %}
         <div class="card mt-4 mx-3">
           <div class="card-body">
-            <p class="card-text">{{ i.text }}</p>
-            {% if request.user == i.author %}
-              <a href="{% url 'del_ans' i.id %}" class="btn btn-outline-dark">Видалити</a>
-            {% endif %}
+                <p class="card-text">{{ i.text }}</p><br>
+                  <a href="{% url 'increase' i.id %}" type="button" class="badge rounded-pill bg-success text-light">▲</a>
+                  <span class="badge rounded-pill bg-secondary text-light">{{ i.rating }}</span>
+                  <a href="{% url 'decrease' i.id %}" type="button" class="badge rounded-pill bg-dark text-light">▼</a>
+                  <div class="float-right">
+                    {% if request.user.username == i.author.username %}
+                      <a href="{% url 'del_ans' i.id %}" class="badge rounded-pill bg-dark text-light">Видалити</a>
+                    {% endif %}
+                  </div>
           </div>
           <div class="navbar navbar-light bg-light text-muted">
-            <h6>Автор: {{ i.author }}</h6>
+            <h6>Автор: {{ i.author }}({{ i.author.rating }})</h6>
             <h6>Дата публікації: {{ i.date }}</h6>
           </div>
         </div>

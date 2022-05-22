@@ -15,6 +15,6 @@ urlpatterns = [
     path('edit/<int:pk>', views.EditPost.as_view(), name='edit'),
     path('logout', views.logout, name='logout'),
     path('search', views.Search.as_view(), name='search'),
-    path('increase/<int:pk>', views.increase, name='increase'),
-    path('decrease/<int:pk>', views.decrease, name='decrease')
+    path('increase/<int:pk>', views.increase_rating, name='increase'),
+    path('decrease/<int:pk>', views.decrease_rating, name='decrease')
 ]

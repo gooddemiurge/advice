@@ -1,23 +1,29 @@
-from django.contrib import messages, auth
-from django.contrib.auth.models import User
+from django.contrib import auth
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import FormMixin, UpdateView
-from .models import Post, Answer, KeyWords, MyUser
-from .forms import PostForm, AnswerForm, SignUpForm, LoginForm
 from django.contrib.auth import login as auth_login, authenticate
 from django.views.generic import ListView, DetailView
+from .models import Post, Answer, KeyWords, MyUser
+from .forms import PostForm, AnswerForm, SignUpForm, LoginForm
+
 
 
 class MainPage(ListView):
+    """
+    Return reversed list of added posts.
+    """
     model = Post
     queryset = Post.objects.order_by('-id')
     template_name = "advice_app/index.html"
 
 
 class Search(ListView):
+    """
+    Return list of posts that the user is looking for.
+    """
     model = Post
     template_name = 'advice_app/search.html'
 
@@ -27,20 +33,21 @@ class Search(ListView):
         search_result = []
 
         for keyword_user_wants in search_list:
-            keyword_user_wants = KeyWords.remove_signs(keyword_user_wants)
+            keyword_user_wants = KeyWords.remove_punctuation(keyword_user_wants)
             if KeyWords.is_key_word(keyword_user_wants):
-                dbContainsKeyword = KeyWords.objects.filter(word=keyword_user_wants).exists()
-                if not dbContainsKeyword:
+                db_contains_keyword = KeyWords.objects.filter(word=keyword_user_wants).exists()
+                if not db_contains_keyword:
                     new_word = KeyWords(word=keyword_user_wants)
                     new_word.save()
                 else:
                     new_word = KeyWords.objects.get(word=keyword_user_wants)
 
-                relevantPosts = Post.objects.filter(Q(title__icontains=keyword_user_wants) | Q(question__icontains=keyword_user_wants))
-                if not relevantPosts:
-                    relevantPosts = Post.objects.filter(Q(title__icontains=KeyWords.translate(keyword_user_wants)) | Q(question__icontains=KeyWords.translate(keyword_user_wants)))
+                relevant_posts = Post.objects.filter(Q(title__icontains=keyword_user_wants) | Q(question__icontains=keyword_user_wants))
+                if not relevant_posts:
+                    relevant_posts = Post.objects.filter(Q(title__icontains=KeyWords.translate(keyword_user_wants)) |
+                                                         Q(question__icontains=KeyWords.translate(keyword_user_wants)))
 
-                for post in relevantPosts:
+                for post in relevant_posts:
                     new_word.posts.add(post.id)
                     if post not in search_result:
                         search_result.append(post)
@@ -49,6 +56,9 @@ class Search(ListView):
 
 
 class MyPosts(ListView):
+    """
+    Return reversed list of user's posts.
+    """
     Model = Post
     template_name = "advice_app/my_posts.html"
 
@@ -57,12 +67,28 @@ class MyPosts(ListView):
 
 
 def delete_post(request, pk=None):
+    """
+    Delete post by its id.
+
+    :param pk: post id
+    :type pk: int
+
+    :return: redirect to the main page
+    """
     post_to_delete = Post.objects.get(id=pk)
     post_to_delete.delete()
     return HttpResponseRedirect(reverse('index'))
 
 
 def delete_answer(request, pk=None):
+    """
+    Delete answer by its id.
+
+    :param pk: answer id
+    :type pk: int
+
+    :return: redirect to the connected post's detail page
+    """
     page = request.META.get('HTTP_REFERER')
     answer_to_delete = Answer.objects.get(id=pk)
     answer_to_delete.delete()
@@ -70,6 +96,14 @@ def delete_answer(request, pk=None):
 
 
 def change_status(request, pk=None):
+    """
+    Change post's status.
+
+    :param pk: post id
+    :type pk: int
+
+    :return: redirect to the post's detail page
+    """
     page = request.META.get('HTTP_REFERER')
     post = Post.objects.get(id=pk)
     post.isClosed = not post.isClosed
@@ -78,6 +112,12 @@ def change_status(request, pk=None):
 
 
 class PostDetail(FormMixin, DetailView):
+    """
+    Return post's detail page.
+
+    Post's detail page contains all information about post; extra author's functions: edit, mark as done, delete;
+    Form of adding an answer; reversed list of answers.
+    """
     model = Post
     template_name = "advice_app/detail.html"
     form_class = AnswerForm
@@ -102,22 +142,33 @@ class PostDetail(FormMixin, DetailView):
 
 
 class EditPost(UpdateView):
+    """Edit post."""
     model = Post
     form_class = PostForm
     template_name = 'advice_app/edit.html'
 
 
-def increase(request, pk=None):
+def increase_rating(request, pk=None):
+    """
+    Increase post's and user's rating.
+
+    When user increases answers' rating its author's rating increases too.
+
+    :param pk: answer id
+    :type pk: int
+
+    :return: redirect to the current page
+    """
     page = request.META.get('HTTP_REFERER')
-    user = MyUser.objects.get(username=Answer.objects.get(id=pk).author)
-    answer = Answer.objects.get(id=pk)
-    if MyUser.objects.get(id=request.user.id) not in answer.users_increased_rating.all():
-        answer.users_increased_rating.add(request.user.id)
-        if MyUser.objects.get(id=request.user.id) in answer.users_decreased_rating.all():
-            user_to_delate = answer.users_decreased_rating
-            user_to_delate.remove(MyUser.objects.get(id=request.user.id))
-            user_to_delate = answer.users_increased_rating
-            user_to_delate.remove(MyUser.objects.get(id=request.user.id))
+    user = Answer.objects.get(id=pk).author  #answer's author
+    answer = Answer.objects.get(id=pk)  #answer
+    if MyUser.objects.get(id=request.user.id) not in answer.users_increased_rating.all():  #if user didn't increased post's rating
+        answer.users_increased_rating.add(request.user.id)  #mark user as increased rating
+        if MyUser.objects.get(id=request.user.id) in answer.users_decreased_rating.all():  #if user decreased rating return to the state when rating was not changed
+            user_to_delete = answer.users_decreased_rating  #delate user from list of users that decreased post's rating
+            user_to_delete.remove(MyUser.objects.get(id=request.user.id))
+            user_to_delete = answer.users_increased_rating  #delate user from list of users that increased post's rating
+            user_to_delete.remove(MyUser.objects.get(id=request.user.id))
         user.rating += 1
         user.save()
         answer.rating += 1
@@ -125,17 +176,27 @@ def increase(request, pk=None):
     return redirect(page)
 
 
-def decrease(request, pk=None):
+def decrease_rating(request, pk=None):
+    """
+    Decrease post's and user's rating.
+
+    When user decreases answers' rating its author's rating decreases too.
+
+    :param pk: answer id
+    :type pk: int
+
+    :return: redirect to the current page
+    """
     page = request.META.get('HTTP_REFERER')
-    user = MyUser.objects.get(username=Answer.objects.get(id=pk).author)
-    answer = Answer.objects.get(id=pk)
-    if MyUser.objects.get(id=request.user.id) not in answer.users_decreased_rating.all():
-        answer.users_decreased_rating.add(request.user.id)
-        if MyUser.objects.get(id=request.user.id) in answer.users_increased_rating.all():
-            user_to_delate = answer.users_increased_rating
-            user_to_delate.remove(MyUser.objects.get(id=request.user.id))
-            user_to_delate = answer.users_decreased_rating
-            user_to_delate.remove(MyUser.objects.get(id=request.user.id))
+    user = Answer.objects.get(id=pk).author #answer's author
+    answer = Answer.objects.get(id=pk)  #answer
+    if MyUser.objects.get(id=request.user.id) not in answer.users_decreased_rating.all():  #if user didn't decreased post's rating
+        answer.users_decreased_rating.add(request.user.id)  #mark user as decreased rating
+        if MyUser.objects.get(id=request.user.id) in answer.users_increased_rating.all():  #if user increased rating return to the state when rating was not changed
+            user_to_delete = answer.users_increased_rating  #delate user from list of users that increased post's rating
+            user_to_delete.remove(MyUser.objects.get(id=request.user.id))
+            user_to_delete = answer.users_decreased_rating  #delate user from list of users that decreased post's rating
+            user_to_delete.remove(MyUser.objects.get(id=request.user.id))
         user.rating -= 1
         user.save()
         answer.rating -= 1
@@ -144,6 +205,11 @@ def decrease(request, pk=None):
 
 
 def add_post(request):
+    """
+    Add new post.
+
+    :return: template combined with context dictionary
+    """
     error = ''
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -164,6 +230,11 @@ def add_post(request):
 
 
 def register(request):
+    """
+    Create and log in new account.
+
+    :return: template combined with context dictionary
+    """
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -179,6 +250,11 @@ def register(request):
 
 
 def login(request):
+    """
+    Log in existing account.
+
+    :return: template combined with context dictionary
+    """
     if request.method == 'POST':
         form = LoginForm(request, request.POST)
         if form.is_valid():
@@ -193,6 +269,11 @@ def login(request):
 
 
 def logout(request):
+    """
+    Log out of account.
+
+    :return: redirect to the main page
+    """
     auth.logout(request)
     return redirect('index')
 

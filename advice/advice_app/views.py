@@ -150,9 +150,9 @@ class EditPost(UpdateView):
 
 def increase_rating(request, pk=None):
     """
-    Increase post's and user's rating.
+    Increase the rating of both the post and the user.
 
-    When user increases answers' rating its author's rating increases too.
+    When the user increases the rating of the answer, the rating of its author increases too.
 
     :param pk: answer id
     :type pk: int
@@ -178,9 +178,9 @@ def increase_rating(request, pk=None):
 
 def decrease_rating(request, pk=None):
     """
-    Decrease post's and user's rating.
+    Decrease the rating of both the post and the user.
 
-    When user decreases answers' rating its author's rating decreases too.
+    When the user decreases the rating of the answer, the rating of its author decreases too.
 
     :param pk: answer id
     :type pk: int
@@ -206,7 +206,7 @@ def decrease_rating(request, pk=None):
 
 def add_post(request):
     """
-    Add new post.
+    Add a new post.
 
     :return: template combined with context dictionary
     """
@@ -231,7 +231,7 @@ def add_post(request):
 
 def register(request):
     """
-    Create and log in new account.
+    Create a new account and login.
 
     :return: template combined with context dictionary
     """
@@ -251,7 +251,7 @@ def register(request):
 
 def login(request):
     """
-    Log in existing account.
+    Login to an existing account.
 
     :return: template combined with context dictionary
     """
@@ -270,7 +270,7 @@ def login(request):
 
 def logout(request):
     """
-    Log out of account.
+    Logout the user.
 
     :return: redirect to the main page
     """

@@ -76,7 +76,10 @@ class KeyWords(models.Model):
     @staticmethod
     def translate(text):
         """
-        Solves the problem of changing the layout by replacing the Latin alphabet with Cyrillic.
+        Solves the problem of changing the layout by replacing the Latin alphabet with Cyrillic and ending up with 
+        Gibberish instead. 
+        
+        For example, the user forgets to switch the keyboard to Cyrillic and types "ckjdj", but meant to type "слово".
         """
         incorrect_input_dict = {
             "q":"й", "w":"ц", "e":"у", "r":"к", "t":"е", "y":"н", "u":"г", "i":"ш", "o":"щ", "p":"з", '[':"х",

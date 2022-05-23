@@ -59,9 +59,13 @@
         <div class="card mt-4 mx-3">
           <div class="card-body">
                 <p class="card-text">{{ i.text }}</p><br>
+                    {% if request.user.username %}
                   <a href="{% url 'increase' i.id %}" type="button" class="badge rounded-pill bg-success text-light">▲</a>
+                    {% endif %}
                   <span class="badge rounded-pill bg-secondary text-light">{{ i.rating }}</span>
+                    {% if request.user.username %}
                   <a href="{% url 'decrease' i.id %}" type="button" class="badge rounded-pill bg-dark text-light">▼</a>
+                    {% endif %}
                   <div class="float-right">
                     {% if request.user.username == i.author.username %}
                       <a href="{% url 'del_ans' i.id %}" class="badge rounded-pill bg-dark text-light">Видалити</a>

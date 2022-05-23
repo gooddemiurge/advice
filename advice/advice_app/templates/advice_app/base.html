@@ -30,7 +30,7 @@
 
         {% if request.user.username %}
         <ul class="nav justify-content-right">
-            <li><a class="btn btn-outline-success" href="{% url 'add_post' %}">Додати допис</a></li>
+            <li><a class="btn btn-outline-success" href="{% url 'add_post' %}">Додати питання</a></li>
             <div class="pr-sm-4"></div>
             <li class="nav-item dropdown">
                 <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -39,7 +39,7 @@
 
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li><a class="dropdown-item" href="{% url 'logout' %}">Вийти</a></li>
-                    <li><a class="dropdown-item" href="{% url 'posts' %}">Мої пости</a></li>
+                    <li><a class="dropdown-item" href="{% url 'posts' %}">Мої питання</a></li>
                 </ul>
             </li>
         </ul>

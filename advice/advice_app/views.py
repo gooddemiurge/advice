@@ -16,6 +16,7 @@ class MainPage(ListView):
     Return reversed list of added posts.
     """
     model = Post
+    paginate_by = 10
     queryset = Post.objects.order_by('-id')
     template_name = "advice_app/index.html"
 
@@ -26,6 +27,7 @@ class Search(ListView):
     """
     model = Post
     template_name = 'advice_app/search.html'
+    paginate_by = 10
 
     def get_queryset(self):
         search_query = self.request.GET.get('search', '')
@@ -42,10 +44,15 @@ class Search(ListView):
                 else:
                     new_word = KeyWords.objects.get(word=keyword_user_wants)
 
-                relevant_posts = Post.objects.filter(Q(title__icontains=keyword_user_wants) | Q(question__icontains=keyword_user_wants))
+                relevant_posts = Post.objects.filter(
+                    Q(title__icontains=keyword_user_wants) |
+                    Q(question__icontains=keyword_user_wants)
+                )
                 if not relevant_posts:
-                    relevant_posts = Post.objects.filter(Q(title__icontains=KeyWords.translate(keyword_user_wants)) |
-                                                         Q(question__icontains=KeyWords.translate(keyword_user_wants)))
+                    relevant_posts = Post.objects.filter(
+                        Q(title__icontains=KeyWords.translate(keyword_user_wants)) |
+                        Q(question__icontains=KeyWords.translate(keyword_user_wants))
+                    )
 
                 for post in relevant_posts:
                     new_word.posts.add(post.id)
@@ -61,6 +68,7 @@ class MyPosts(ListView):
     """
     Model = Post
     template_name = "advice_app/my_posts.html"
+    paginate_by = 10
 
     def get_queryset(self):
         return Post.objects.filter(author=self.request.user).order_by('-id')
@@ -160,15 +168,25 @@ def increase_rating(request, pk=None):
     :return: redirect to the current page
     """
     page = request.META.get('HTTP_REFERER')
-    user = Answer.objects.get(id=pk).author  #answer's author
-    answer = Answer.objects.get(id=pk)  #answer
-    if MyUser.objects.get(id=request.user.id) not in answer.users_increased_rating.all():  #if user didn't increased post's rating
-        answer.users_increased_rating.add(request.user.id)  #mark user as increased rating
-        if MyUser.objects.get(id=request.user.id) in answer.users_decreased_rating.all():  #if user decreased rating return to the state when rating was not changed
-            user_to_delete = answer.users_decreased_rating  #delate user from list of users that decreased post's rating
+    user = Answer.objects.get(id=pk).author
+    answer = Answer.objects.get(id=pk)
+
+    has_user_increased_rating_previously = MyUser.objects.get(id=request.user.id) in answer.users_increased_rating.all()
+
+    if not has_user_increased_rating_previously:
+        has_user_decreased_rating_previously = MyUser.objects.get(id=request.user.id) in answer.users_decreased_rating.all()
+
+        if has_user_decreased_rating_previously:
+            # The user has previously decreased this answer's rating (-1), but is now increasing it (+1).
+            # So, it is as if the user has not done anything at all, and so should be allowed to rate this answer again
+            # in the future.
+
+            # So, reset the user's restriction to decrease this answer's rating.
+            user_to_delete = answer.users_decreased_rating
             user_to_delete.remove(MyUser.objects.get(id=request.user.id))
-            user_to_delete = answer.users_increased_rating  #delate user from list of users that increased post's rating
-            user_to_delete.remove(MyUser.objects.get(id=request.user.id))
+        else:
+            answer.users_increased_rating.add(request.user.id)
+
         user.rating += 1
         user.save()
         answer.rating += 1
@@ -188,15 +206,25 @@ def decrease_rating(request, pk=None):
     :return: redirect to the current page
     """
     page = request.META.get('HTTP_REFERER')
-    user = Answer.objects.get(id=pk).author #answer's author
-    answer = Answer.objects.get(id=pk)  #answer
-    if MyUser.objects.get(id=request.user.id) not in answer.users_decreased_rating.all():  #if user didn't decreased post's rating
-        answer.users_decreased_rating.add(request.user.id)  #mark user as decreased rating
-        if MyUser.objects.get(id=request.user.id) in answer.users_increased_rating.all():  #if user increased rating return to the state when rating was not changed
-            user_to_delete = answer.users_increased_rating  #delate user from list of users that increased post's rating
+    user = Answer.objects.get(id=pk).author
+    answer = Answer.objects.get(id=pk)
+
+    has_user_decreased_rating_previously = MyUser.objects.get(id=request.user.id) in answer.users_decreased_rating.all()
+
+    if not has_user_decreased_rating_previously:
+        has_user_increased_rating_previously = MyUser.objects.get(id=request.user.id) in answer.users_increased_rating.all()
+
+        if has_user_increased_rating_previously:
+            # The user has previously increased this answer's rating (+1), but is now increasing it (-1).
+            # So, it is as if the user has not done anything at all, and so should be allowed to rate this answer again
+            # in the future.
+
+            # So, reset the user's restriction to increase this answer's rating.
+            user_to_delete = answer.users_increased_rating
             user_to_delete.remove(MyUser.objects.get(id=request.user.id))
-            user_to_delete = answer.users_decreased_rating  #delate user from list of users that decreased post's rating
-            user_to_delete.remove(MyUser.objects.get(id=request.user.id))
+        else:
+            answer.users_decreased_rating.add(request.user.id)
+
         user.rating -= 1
         user.save()
         answer.rating -= 1

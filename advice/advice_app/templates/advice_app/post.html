@@ -1,5 +1,5 @@
 {% if object_list %}
-  {% for i in object_list %}
+{% for i in page_obj %}
     <div class="card mt-4 mx-3">
       <div class="card-header alert-success"><h5>{{ i.title }}</h5></div>
       <div class="card-body">
@@ -12,6 +12,23 @@
       </div>
     </div>
   {% endfor %}
+
+<nav aria-label="Page navigation example">
+<ul class="pagination justify-content-center my-4">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link text-dark" href="?page=1">&laquo;</a></li>
+        <li class="page-item"><a class="page-link text-dark" href="?page={{ page_obj.previous_page_number }}">‹</a></li>
+        {% endif %}
+
+        <li class="page-item"><a class="page-link text-dark">Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</a></li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link text-dark" href="?page={{ page_obj.next_page_number }}">›</a></li>
+        <li class="page-item"><a class="page-link text-dark" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+        {% endif %}
+</ul>
+</nav>
 {% else %}
   <p class="mx-4 my-3">Наразі дописів немає</p>
 {% endif %}
+

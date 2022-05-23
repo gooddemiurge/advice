@@ -1,3 +1,6 @@
+"""
+Models.
+"""
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -64,21 +67,27 @@ class KeyWords(models.Model):
     @staticmethod
     def is_key_word(text):
         """Сhecks if the word is a keyword."""
-        isKeyword = len(text) > 1 and " " not in text or text.isdigit()
-        return isKeyword
+        is_keyword = len(text) > 1 and " " not in text or text.isdigit()
+        return is_keyword
 
     @staticmethod
     def remove_punctuation(text):
         """Removes punctuation for correct search function work."""
-        text = text.replace(".", "").replace(",", "").replace("?", "").replace("!", "").replace(":", "").replace(";", "")
+        text = text\
+            .replace(".", "")\
+            .replace(",", "")\
+            .replace("?", "")\
+            .replace("!", "")\
+            .replace(":", "")\
+            .replace(";", "")
         return text
 
     @staticmethod
     def translate(text):
         """
-        Solves the problem of changing the layout by replacing the Latin alphabet with Cyrillic and ending up with 
-        Gibberish instead. 
-        
+        Solves the problem of changing the layout by replacing the Latin alphabet with Cyrillic and ending up with
+        Gibberish instead.
+
         For example, the user forgets to switch the keyboard to Cyrillic and types "ckjdj", but meant to type "слово".
         """
         incorrect_input_dict = {

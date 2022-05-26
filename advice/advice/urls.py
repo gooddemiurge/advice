@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
     path('', include('advice_app.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -68,6 +68,7 @@
                     {% endif %}
                   <div class="float-right">
                     {% if request.user.username == i.author.username %}
+                      <a href="{% url 'edit_answer' i.id %}" class="badge rounded-pill bg-secondary text-light">Редагувати</a>
                       <a href="{% url 'del_ans' i.id %}" class="badge rounded-pill bg-dark text-light">Видалити</a>
                     {% endif %}
                   </div>

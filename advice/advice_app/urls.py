@@ -16,5 +16,6 @@ urlpatterns = [
     path('logout', views.logout, name='logout'),
     path('search', views.Search.as_view(), name='search'),
     path('increase/<int:pk>', views.increase_rating, name='increase'),
-    path('decrease/<int:pk>', views.decrease_rating, name='decrease')
+    path('decrease/<int:pk>', views.decrease_rating, name='decrease'),
+    path('edit_answer/<int:pk>', views.EditAnswer.as_view(), name="edit_answer")
 ]

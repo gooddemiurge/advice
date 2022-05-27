@@ -156,6 +156,14 @@ class EditPost(UpdateView):
     template_name = 'advice_app/edit.html'
 
 
+class EditAnswer(UpdateView):
+    """Edit answer"""
+    model = Answer
+    form_class = AnswerForm
+    template_name = 'advice_app/edit_answer.html'
+
+
+
 def increase_rating(request, pk=None):
     """
     Increase the rating of both the post and the user.

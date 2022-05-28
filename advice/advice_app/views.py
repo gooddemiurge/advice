@@ -7,7 +7,7 @@ from django.views.generic.edit import FormMixin, UpdateView
 from django.contrib.auth import login as auth_login, authenticate
 from django.views.generic import ListView, DetailView
 from .models import Post, Answer, KeyWords, MyUser
-from .forms import PostForm, AnswerForm, SignUpForm, LoginForm, UsernameChangeForm
+from .forms import PostForm, AnswerForm, SignUpForm, LoginForm, UsernameChangeForm, DeleteUserForm
 
 
 class MainPage(ListView):
@@ -102,6 +102,20 @@ def delete_answer(request, pk=None):
     return redirect(page)
 
 
+def delete_user(request):
+    """User deletion function."""
+    if request.method == 'POST':
+        user = MyUser.objects.get(id=request.user.id)
+        password = request.POST['password']
+        if authenticate(username=user.username, password=password):
+            user.delete()
+            return redirect('index')
+        messages.add_message(request, messages.INFO, "Пароль неправильний")
+
+    form = DeleteUserForm()
+    return render(request, 'advice_app/delete_user.html', {'form': form})
+
+
 def change_status(request, pk=None):
     """
     Change post's status.
@@ -156,14 +170,14 @@ class EditPost(UpdateView):
 
 
 class EditAnswer(UpdateView):
-    """Edit answer"""
+    """Edit answer."""
     model = Answer
     form_class = AnswerForm
     template_name = 'advice_app/edit_answer.html'
 
 
 def edit_username(request):
-    """Edit username"""
+    """Edit username."""
     if request.method == 'POST':
         user = request.user
         new_username = request.POST['username'].strip()

@@ -1,17 +1,17 @@
 {% extends 'advice_app/base.html' %}
 
 {% block title %}
-    Змінити ім'я
+    Видалити профіль
 {% endblock %}
 
 {% block content %}
     <div class="row justify-content-center">
     <div class="col-m-9">
-    <h1 class="display-4 mx-2 my-3 mt-5">Змінити ім'я користувача</h1>
+    <h1 class="display-4 mx-2 my-3 mt-5">Видалити профіль</h1>
         <form method="post">
             {% csrf_token %}
-            <h4 class="font-weight-normal my-3 mt-5">Нове ім'я:</h4>
-            {{ form.username }}<br>
+            <h4 class="font-weight-normal my-3 mt-5">Введіть пароль:</h4>
+            {{ form.password }}<br>
 
             {% if messages %}
                 <div class="messages">
@@ -20,7 +20,7 @@
                     {% endfor %}
                 </div>
             {% endif %}
-            <button class="btn btn-outline-success" type="submit">Змінити</button>
+            <button class="btn btn-outline-success" type="submit">Видалити</button>
         </form>
     </div>
     </div>

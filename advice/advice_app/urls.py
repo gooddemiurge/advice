@@ -19,5 +19,6 @@ urlpatterns = [
     path('decrease/<int:pk>', views.decrease_rating, name='decrease'),
     path('edit_answer/<int:pk>', views.EditAnswer.as_view(), name="edit_answer"),
     path('edit_username', views.edit_username, name="edit_username"),
-    path('delete_user', views.delete_user, name="delete_user")
+    path('delete_user', views.delete_user, name="delete_user"),
+    path('change_password', views.change_password, name="change_password")
 ]

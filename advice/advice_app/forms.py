@@ -77,3 +77,19 @@ class DeleteUserForm(AuthenticationForm):
     class Meta:
         model = MyUser
         fields = ["password"]
+
+
+class ChangePasswordForm(AuthenticationForm, UserCreationForm):
+    """
+    User change form, inherited from Django AuthenticationForm.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["password"].widget.attrs.update({'class':'form-control', 'placeholder':"Введіть пароль"})
+        self.fields["password1"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть пароль"})
+        self.fields["password2"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть пароль"})
+
+    class Meta:
+        model = MyUser
+        fields = ["password", 'password1', 'password2']

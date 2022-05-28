@@ -7,7 +7,7 @@ from django.views.generic.edit import FormMixin, UpdateView
 from django.contrib.auth import login as auth_login, authenticate
 from django.views.generic import ListView, DetailView
 from .models import Post, Answer, KeyWords, MyUser
-from .forms import PostForm, AnswerForm, SignUpForm, LoginForm, UsernameChangeForm, DeleteUserForm
+from .forms import PostForm, AnswerForm, SignUpForm, LoginForm, UsernameChangeForm, DeleteUserForm, ChangePasswordForm
 
 
 class MainPage(ListView):
@@ -102,6 +102,27 @@ def delete_answer(request, pk=None):
     return redirect(page)
 
 
+def change_password(request):
+    """Password change function."""
+    if request.method == 'POST':
+        user = MyUser.objects.get(id=request.user.id)
+        old_password = request.POST['password']
+        if authenticate(username=user.username, password=old_password):
+            new_password1 = request.POST['password1']
+            new_password2 = request.POST['password2']
+            if new_password1 == new_password2:
+                user.set_password(new_password1)
+                user.save()
+                auth_login(request, user)
+                return redirect('index')
+            messages.add_message(request, messages.INFO, "Паролі не збігаються")
+        else:
+            messages.add_message(request, messages.INFO, "Пароль неправильний")
+
+    form = ChangePasswordForm()
+    return render(request, 'advice_app/change_password.html', {'form': form})
+
+
 def delete_user(request):
     """User deletion function."""
     if request.method == 'POST':
@@ -185,7 +206,7 @@ def edit_username(request):
             user.username = new_username
             user.save()
             return redirect('index')
-        messages.add_message(request, messages.INFO, "Дане ім'я вже зайнято")
+        messages.add_message(request, messages.INFO, "Дане ім'я вже зайняте")
 
     form = UsernameChangeForm()
     return render(request, 'advice_app/edit_username.html', {'form': form})

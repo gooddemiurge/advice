@@ -1,4 +1,4 @@
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -7,8 +7,7 @@ from django.views.generic.edit import FormMixin, UpdateView
 from django.contrib.auth import login as auth_login, authenticate
 from django.views.generic import ListView, DetailView
 from .models import Post, Answer, KeyWords, MyUser
-from .forms import PostForm, AnswerForm, SignUpForm, LoginForm
-
+from .forms import PostForm, AnswerForm, SignUpForm, LoginForm, UsernameChangeForm
 
 
 class MainPage(ListView):
@@ -162,6 +161,20 @@ class EditAnswer(UpdateView):
     form_class = AnswerForm
     template_name = 'advice_app/edit_answer.html'
 
+
+def edit_username(request):
+    """Edit username"""
+    if request.method == 'POST':
+        user = request.user
+        new_username = request.POST['username'].strip()
+        if not MyUser.objects.filter(username=new_username) and new_username:
+            user.username = new_username
+            user.save()
+            return redirect('index')
+        messages.add_message(request, messages.INFO, "Дане ім'я вже зайнято")
+
+    form = UsernameChangeForm()
+    return render(request, 'advice_app/edit_username.html', {'form': form})
 
 
 def increase_rating(request, pk=None):

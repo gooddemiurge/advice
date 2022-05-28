@@ -48,3 +48,20 @@ class LoginForm(AuthenticationForm):
     class Meta:
         model = MyUser
         fields = ["username", 'password']
+
+
+class UsernameChangeForm(AuthenticationForm):
+    """
+    Username change form, inherited from Django AuthenticationForm.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update({'class':'form-control', 'placeholder':"Введіть нове iм'я"})
+
+    class Meta:
+        model = MyUser
+        fields = ["username"]
+        widgets ={
+            "username": TextInput(attrs={'placeholder': 'Введіть заголовок', 'class': 'form-control'})
+        }

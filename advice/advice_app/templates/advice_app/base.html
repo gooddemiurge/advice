@@ -40,6 +40,17 @@
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li><a class="dropdown-item" href="{% url 'logout' %}">Вийти</a></li>
                     <li><a class="dropdown-item" href="{% url 'posts' %}">Мої питання</a></li>
+                    <li class="nav-item dropdown">
+                        <a type="button" class="dropdown-toggle mx-4" data-bs-toggle="dropdown" aria-expanded="false">
+                            Профіль
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a class="dropdown-item" href="{% url 'edit_username' %}">Змінити ім'я</a></li>
+                            <li><a class="dropdown-item" href="#">Змінити пароль</a></li>
+                            <li><a class="dropdown-item" href="#">Видалити профіль</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
         </ul>

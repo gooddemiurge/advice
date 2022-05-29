@@ -302,8 +302,7 @@ def add_post(request):
             new_post.author = MyUser.objects.get(id=request.user.id)
             new_post.save()
             return redirect('index')
-        else:
-            error = 'Недійсна форма'
+        error = 'Недійсна форма'
 
     form = PostForm()
     context = {
@@ -360,6 +359,3 @@ def logout(request):
     """
     auth.logout(request)
     return redirect('index')
-
-
-

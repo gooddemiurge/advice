@@ -3,6 +3,7 @@ Models.
 """
 from django.db import models
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
 from django.urls import reverse
 
 
@@ -44,6 +45,9 @@ class Answer(models.Model):
     rating = models.IntegerField(default=0)
     users_increased_rating = models.ManyToManyField(MyUser, related_name="users_increased_rating")
     users_decreased_rating = models.ManyToManyField(MyUser, related_name="users_decreased_rating")
+
+    def get_absolute_url(self, **kwargs):
+        return reverse('detail', kwargs={'pk':self.post.id})
 
     class Meta:
         ordering = ['-id']

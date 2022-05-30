@@ -1,6 +1,4 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.models import User
-
 from .models import Post, Answer, MyUser
 from django.forms import ModelForm, Textarea, TextInput
 
@@ -10,17 +8,21 @@ class PostForm(ModelForm):
     class Meta:
         model = Post
         fields = ["title", "question"]
-        widgets ={
+        widgets = {
             "title": TextInput(attrs={'placeholder': 'Введіть заголовок', 'class': 'form-control'}),
             "question": Textarea(attrs={'placeholder': 'Введіть питання', 'class': 'form-control'})
         }
+
 
 class AnswerForm(ModelForm):
     """Form for adding answer."""
     class Meta:
         model = Answer
         fields = ["text"]
-        widgets = {"text": Textarea(attrs={'placeholder': 'Додайте відповідь', 'rows':5, 'cols':146, 'class': 'form-control'})}
+        widgets = {
+           "text": Textarea(attrs={'placeholder': 'Додайте відповідь', 'rows': 5, 'cols': 146, 'class': 'form-control'})
+        }
+
 
 class SignUpForm(UserCreationForm):
     """
@@ -28,7 +30,7 @@ class SignUpForm(UserCreationForm):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["username"].widget.attrs.update({'class':'form-control', 'placeholder':"Введіть iм'я користувача"})
+        self.fields["username"].widget.attrs.update({'class':'form-control', 'placeholder': "Введіть iм'я користувача"})
         self.fields["password1"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть пароль"})
         self.fields["password2"].widget.attrs.update({'class': 'form-control', 'placeholder': "Підтвердіть пароль"})
 
@@ -36,15 +38,59 @@ class SignUpForm(UserCreationForm):
         model = MyUser
         fields = ["username", 'password1', 'password2']
 
+
 class LoginForm(AuthenticationForm):
-    """
-    Authentication form, inherited from Django AuthenticationForm.
-    """
+    """Authentication form, inherited from Django AuthenticationForm."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["username"].widget.attrs.update({'class':'form-control', 'placeholder':"Введіть iм'я користувача"})
+        self.fields["username"].widget.attrs.update({'class': 'form-control', 'placeholder':"Введіть iм'я користувача"})
         self.fields["password"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть пароль"})
 
     class Meta:
         model = MyUser
         fields = ["username", 'password']
+
+
+class UsernameChangeForm(AuthenticationForm):
+    """
+    Username change form, inherited from Django AuthenticationForm.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть нове iм'я"})
+
+    class Meta:
+        model = MyUser
+        fields = ["username"]
+
+
+class DeleteUserForm(AuthenticationForm):
+    """
+    User delete form, inherited from Django AuthenticationForm.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["password"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть пароль"})
+
+    class Meta:
+        model = MyUser
+        fields = ["password"]
+
+
+class ChangePasswordForm(AuthenticationForm, UserCreationForm):
+    """
+    User change form, inherited from Django AuthenticationForm and UserCreationForm.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["password"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть пароль"})
+        self.fields["password1"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть пароль"})
+        self.fields["password2"].widget.attrs.update({'class': 'form-control', 'placeholder': "Введіть пароль"})
+
+    class Meta:
+        model = MyUser
+        fields = ["password", 'password1', 'password2']

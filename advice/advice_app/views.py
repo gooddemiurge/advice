@@ -1,4 +1,4 @@
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -7,8 +7,7 @@ from django.views.generic.edit import FormMixin, UpdateView
 from django.contrib.auth import login as auth_login, authenticate
 from django.views.generic import ListView, DetailView
 from .models import Post, Answer, KeyWords, MyUser
-from .forms import PostForm, AnswerForm, SignUpForm, LoginForm
-
+from .forms import PostForm, AnswerForm, SignUpForm, LoginForm, UsernameChangeForm, DeleteUserForm, ChangePasswordForm
 
 
 class MainPage(ListView):
@@ -103,6 +102,41 @@ def delete_answer(request, pk=None):
     return redirect(page)
 
 
+def change_password(request):
+    """Password change function."""
+    if request.method == 'POST':
+        user = MyUser.objects.get(id=request.user.id)
+        old_password = request.POST['password']
+        if authenticate(username=user.username, password=old_password):
+            new_password1 = request.POST['password1']
+            new_password2 = request.POST['password2']
+            if new_password1 == new_password2:
+                user.set_password(new_password1)
+                user.save()
+                auth_login(request, user)
+                return redirect('index')
+            messages.add_message(request, messages.INFO, "Паролі не збігаються")
+        else:
+            messages.add_message(request, messages.INFO, "Пароль неправильний")
+
+    form = ChangePasswordForm()
+    return render(request, 'advice_app/change_password.html', {'form': form})
+
+
+def delete_user(request):
+    """User deletion function."""
+    if request.method == 'POST':
+        user = MyUser.objects.get(id=request.user.id)
+        password = request.POST['password']
+        if authenticate(username=user.username, password=password):
+            user.delete()
+            return redirect('index')
+        messages.add_message(request, messages.INFO, "Пароль неправильний")
+
+    form = DeleteUserForm()
+    return render(request, 'advice_app/delete_user.html', {'form': form})
+
+
 def change_status(request, pk=None):
     """
     Change post's status.
@@ -154,6 +188,28 @@ class EditPost(UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'advice_app/edit.html'
+
+
+class EditAnswer(UpdateView):
+    """Edit answer."""
+    model = Answer
+    form_class = AnswerForm
+    template_name = 'advice_app/edit_answer.html'
+
+
+def edit_username(request):
+    """Edit username."""
+    if request.method == 'POST':
+        user = request.user
+        new_username = request.POST['username'].strip()
+        if not MyUser.objects.filter(username=new_username) and new_username:
+            user.username = new_username
+            user.save()
+            return redirect('index')
+        messages.add_message(request, messages.INFO, "Дане ім'я вже зайняте")
+
+    form = UsernameChangeForm()
+    return render(request, 'advice_app/edit_username.html', {'form': form})
 
 
 def increase_rating(request, pk=None):
@@ -246,8 +302,7 @@ def add_post(request):
             new_post.author = MyUser.objects.get(id=request.user.id)
             new_post.save()
             return redirect('index')
-        else:
-            error = 'Недійсна форма'
+        error = 'Недійсна форма'
 
     form = PostForm()
     context = {
@@ -304,6 +359,3 @@ def logout(request):
     """
     auth.logout(request)
     return redirect('index')
-
-
-

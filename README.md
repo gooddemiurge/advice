@@ -21,7 +21,7 @@ pip install Django==3.2.7
 # run
 Firstly change directory to `advice/advice`. Then start the Django server: 
 ```
-python3 manage.py runserver --insecure {IP address}:8000 &
+nohup python3 manage.py runserver --insecure {IP address}:8000 &
 ```
 where `{IP address}` is the public IP address of your Django server. 
 

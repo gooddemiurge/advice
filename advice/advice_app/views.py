@@ -327,6 +327,9 @@ def register(request):
             user = authenticate(username=username, password=raw_password)
             auth_login(request, user)
             return redirect('index')
+        messages.add_message(request, messages.INFO, "Форма недійсна. Змініть ім'я або пароль")
+        messages.add_message(request, messages.INFO,
+                             "Пароль має бути довше 8 символів та містити не лише числа")
     else:
         form = SignUpForm()
     return render(request, 'advice_app/register.html', {'form': form})
@@ -347,6 +350,7 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 return redirect('index')
+        messages.add_message(request, messages.INFO, "Недійсне ім'я або пароль")
     form = LoginForm()
     return render(request, 'advice_app/login.html', {'form': form})
 

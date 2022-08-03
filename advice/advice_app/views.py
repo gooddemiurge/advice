@@ -363,3 +363,13 @@ def logout(request):
     """
     auth.logout(request)
     return redirect('index')
+
+
+class GuestPosts(ListView):
+    """
+    Shows shows posts to unregistered users
+    """
+    model = Post
+    paginate_by = 10
+    queryset = Post.objects.order_by('-id')
+    template_name = "advice_app/recent_posts.html"

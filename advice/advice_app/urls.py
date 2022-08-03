@@ -4,6 +4,7 @@ from django.conf.urls import url
 
 urlpatterns = [
     path('', views.MainPage.as_view(), name='index'),
+    path('guest_posts', views.GuestPosts.as_view(), name='recent_posts'),
     path('<int:pk>', views.PostDetail.as_view(), name='detail'),
     path('add_post', views.add_post, name='add_post'),
     url('register', views.register, name='register'),

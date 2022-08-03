@@ -1,0 +1,10 @@
+{% extends 'advice_app/base.html' %}
+
+{% block title %}
+Головна
+{% endblock %}
+
+{% block content %}
+<h1 class="display-4 mx-4 my-3">Останні питання:</h1>
+{% include 'advice_app/post.html' %}
+{% endblock %}

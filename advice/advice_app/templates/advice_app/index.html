@@ -5,8 +5,30 @@
 {% endblock %}
 
 {% block content %}
+{% if not request.user.username %}
+<div class="form-row text-center mt-5">
+    <div style="font-family: 'Trebuchet MS', sans-serif;" class="col-12">
+        <h1 class="display-4 mt-5">Вітаємо у Heap Fragmentation, </h1>
+        <h2 class="my-3">тут ви можете поставити запитання спільноті</h2>
+        <h2 class="my-3"> та відповісти на запитання інших</h2>
+        <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-4">
+            <a href="{% url 'register' %}" class="btn btn-success btn-lg mt-4">Зареєструватись</a>
+            <p class="mt-1"><a href="{% url 'login' %}" class="text-success">Увійти,</a> якщо у вас вже є<br> обліковий запис</p>
+            </div>
+
+            <div class="col-4">
+            <a class="btn btn-secondary btn-lg my-4" href="{% url 'recent_posts' %}">Увійти як гість</a>
+            </div>
+        </div>
+        </div>
+    </div>
+ </div>
+{% else %}
 <h1 class="display-4 mx-4 my-3">Останні питання:</h1>
 {% include 'advice_app/post.html' %}
+{% endif %}
 {% endblock %}
 
 
